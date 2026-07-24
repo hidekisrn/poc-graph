@@ -1,0 +1,9 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.env
+.data/
+.turbo/
+
+# Configuração local do editor/Claude Code (caminhos absolutos da máquina)
+.claude/

@@ -1,0 +1,16 @@
+# A pergunta canônica em SPARQL.
+#
+# `:within*` é um "property path" (SPARQL 1.1): siga zero ou mais arestas :within.
+# Assim como o Cypher, o SPARQL resolve o percurso transitivo numa única linha.
+PREFIX : <urn:poc:>
+
+SELECT ?id ?name WHERE {
+  ?person a :Person ;
+          :id ?id ;
+          :name ?name ;
+          :bornIn ?bi ;
+          :livesIn ?li .
+  ?bi :within* :usa .
+  ?li :within* :europe .
+}
+ORDER BY ?name

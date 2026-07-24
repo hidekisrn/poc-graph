@@ -1,0 +1,17 @@
+{
+  "name": "@poc/cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./index.ts",
+  "bin": {
+    "poc": "./index.ts"
+  },
+  "dependencies": {
+    "@poc/core": "*",
+    "@poc/dataset": "*",
+    "@poc/registry": "*",
+    "@poc/query-languages": "*",
+    "dotenv": "^16.4.7"
+  }
+}
