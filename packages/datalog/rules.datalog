@@ -1,0 +1,41 @@
+% Regras Datalog — DDIA cap. 2, "The Foundation: Datalog".
+%
+% Convenção: Maiúscula = variável, minúscula/aspas = constante.
+% Fatos (EDB), gerados do dataset canônico:
+%   within/2, born_in/2, lives_in/2, works_at/2, knows/2, is_country/1, person_name/2.
+% As regras abaixo (IDB) são carregadas deste arquivo e avaliadas por ponto-fixo.
+% ORDEM IMPORTA: relações negadas (friend) vêm antes de quem as nega (fof).
+
+% --- grafo social: KNOWS é não-direcionado -----------------------------------
+friend(A, B) :- knows(A, B).
+friend(A, B) :- knows(B, A).
+
+% --- fecho transitivo REFLEXIVO de `within` (parte reflexiva de forma SEGURA) --
+within_rec(A, A) :- within(A, B).
+within_rec(B, B) :- within(A, B).
+within_rec(A, C) :- within(A, B), within_rec(B, C).
+
+% Q1 emigrants — nasceu (transit.) nos EUA e mora (transit.) na Europa.
+emigrant(P) :- born_in(P, B), within_rec(B, usa), lives_in(P, L), within_rec(L, europe).
+
+% Q2 colleagues — mesma empresa que a Lucy.
+colleague(P) :- works_at(lucy, C), works_at(P, C), P != lucy.
+
+% Q3 friends-of-friends — amigo de um amigo, mas não amigo direto nem a própria Lucy.
+fof(P) :- friend(lucy, F), friend(F, P), P != lucy, not friend(lucy, P).
+
+% Q4 network — alcançável a partir da Lucy por KNOWS (qualquer profundidade).
+reach(P) :- friend(lucy, P).
+reach(P) :- reach(Q), friend(Q, P).
+network(P) :- reach(P), P != lucy.
+
+% Q5 compatriots — mora no mesmo país que a Lucy.
+country_of(P, C) :- lives_in(P, L), within_rec(L, C), is_country(C).
+compatriot(P) :- country_of(lucy, C), country_of(P, C), P != lucy.
+
+% Q6 reports — quem se reporta (transitivamente) à Lucy (recursão descendo o organograma).
+reports_q(P) :- reports_to(P, lucy).
+reports_q(P) :- reports_to(P, M), reports_q(M).
+
+% Q7 mutual-friends — amigos em comum de Lucy e Sofia.
+mutual_q(P) :- friend(lucy, P), friend(sofia, P), P != lucy, P != sofia.
